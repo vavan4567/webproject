@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    </head>
+    <body>
+        <style>
+            #myTable,tr,td{
+                border: solid;
+                border-color: #000;
+                border-width: 2px;
+            }
+        </style>
+        <table id = "myTable">
+        </table>
+        <script>
+          getAll = function(){
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/get",
+                statusCode: {
+                    200: function (data) {
+                           var table = $('#myTable');
+			       table.remove();
+                           $('body').append('<table id=\'myTable\'></table>');
+			   table = $('#myTable');
+                           for(var i=0;i<data.length;i++){
+                             row = $('<tr></tr>');
+                             elem = $('<td>'+data[i].id+'</td>');
+                             button = $('<td><button id='+data[i].id+' class=\'delete\'>delete</button></td>');
+ 			     button1 = $('<td><button id='+data[i].id+' class=\'update\'>update</button></td>');
+                             row.append(elem);
+                             row.append(button);
+			     row.append(button1);
+                             table.append(row);
+                           }
+			   load_buttons();
+                      }
+               }
+           });
+         }
+
+         load_buttons = function(){
+              $('.delete').on('click',function(){
+                $.ajax({
+                  type: "GET",
+                  url: "http://localhost:8080/delete?id="+$(this).attr('id'),
+                  statusCode: {
+                    200: function (data) {
+			  getAll(); 
+                       }
+                    }
+                 });
+              });
+
+              $('.update').on('click',function(){
+                $.ajax({
+                  type: "GET",
+                  url: "http://localhost:8080/update",
+                  statusCode: {
+                    200: function (data) { 
+			alert("done!update"); 
+                       }
+                    }
+                 });
+              });
+         }
+	 getAll();
+        </script>
+    </body>
+</html>

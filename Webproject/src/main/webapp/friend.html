@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="/jquery-1.11.3.min.js"></script>
+    </head>
+    <body>
+
+        <style>
+            #myTable tr td{
+                border: solid;
+                border-color: #022;
+                border-width: 2px;
+	    	border-radius:5px;
+
+                
+            }
+            #myTable {
+                border: solid;
+                border-color: #022;
+                border-width: 2px;
+            border-radius:5px;
+
+                
+            }
+        </style>
+        
+
+        
+        <br>
+        <br>
+        <div align="center">        
+
+        <table id = "inputTable" >    
+        
+        <tr><td>Id: </td><td><input id = "input_id"> </input> </td> </tr>
+        <tr><td>Zamovnik: </td><td><input id = "input_zamovnik"> </input> </td></tr>
+        <tr><td>Vykonavets: </td><td><input id = "input_vykonavets"> </input> </td></tr>
+        <tr><td>Workdata: </td><td><input id = "input_workdata"> </input></td> </tr>
+        
+        </table>
+        <br><button id = "update">Update</button>   <button id = "add">Add</button>
+        </div>
+        
+
+        <script>
+//works?_action=select
+//works?_action=create&_zamovnik=&_vykonavets=&_workdata=
+//works?_action=delete&_id=
+//works?_action=update&_id=&_zamovnik=&_vykonavets=&_workdata=
+         
+          var api = "http://10.15.32.154:8080/"
+
+          getAll = function(){
+            $.ajax({
+                type: "GET",
+                url: api + "works?_action=select",
+                statusCode: {
+                    200: function (data) {
+  //                     alert(JSON.stringify(data));    
+                           var table = $('#myTable');
+                           table.remove();
+                           $('body').prepend('<table id=\'myTable\' align="center"></table>');
+                           table = $('#myTable');
+                           row = $('<tr></tr>');
+                           elem = $('<td>id</td>');
+                           row.append(elem);
+                           elem = $('<td>Workdata</td>');
+                           row.append(elem);
+                           elem = $('<td>Vyconavets</td>');
+                           row.append(elem);
+                           elem = $('<td>Zamovnik</td>');
+                           row.append(elem);
+                           row.append(elem);
+                           table.append(row);
+                           for(var i=0;i<data.length;i++){
+                             row = $('<tr></tr>');
+                             elem = $('<td>'+data[i].id+'</td>');
+                             row.append(elem);
+                             elem = $('<td>'+data[i].workdata_id+'</td>');
+                             row.append(elem);
+                             elem = $('<td>'+data[i].vykonavets_id+'</td>');
+                             row.append(elem);
+                             elem = $('<td>'+data[i].zamovnyk_id+'</td>');
+                             row.append(elem);
+                             button = $('<td><button id='+data[i].id+' class=\'delete\'>delete</button></td>');
+                             row.append(button);
+                             table.append(row);
+                           }
+              			   load_buttons();
+                      }
+               }
+           });
+         }
+
+
+         load_buttons = function(){
+              $('.delete').on('click',function(){
+                $.ajax({
+                  type: "GET",
+                  url: api + "works?_action=delete&_id="+$(this).attr('id'),
+                  statusCode: {
+                    200: function (data) {
+			                 alert("deleted");
+                       getAll(); 
+                       }
+                    }
+                 });
+              });
+         }
+
+
+
+              $('#add').on('click',function(){
+                $.ajax({
+                  type: "GET",
+                  url: api +"works?_action=create&_zamovnyk=" + $('#input_zamovnik').val() + "&_vykonavets=" + $('#input_vykonavets').val() + "&_workdata=" + $('#input_workdata').val(),
+                  statusCode: {
+                    200: function (data) {
+              getAll(); 
+                       }
+                    }
+                 });
+              });
+
+           
+         $('#update').on('click',function(){
+                $.ajax({
+                  type: "GET",
+                  url: api +"works?_action=update&_id=" + $('#input_id').val() + "&_zamovnyk=" + $('#input_zamovnik').val() + "&_vykonavets=" + $('#input_vykonavets').val() + "&_workdata=" + $('#input_workdata').val(),
+                  statusCode: {
+                    200: function (data) {
+              getAll(); 
+                       }
+                    }
+                 });
+              });
+
+	 getAll();
+        </script>
+
+      <button><a href="/index.html">my API</button>  
+  
+
+    </body>
+</html>

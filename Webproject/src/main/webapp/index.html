@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="/jquery-1.11.3.min.js"></script>
+    </head>
+    <body>
+
+        <style>
+            #myTable tr td{
+                border: solid;
+                border-color: #022;
+                border-width: 2px;
+                border-radius:5px;
+
+
+            }
+            #myTable {
+                border: solid;
+                border-color: #022;
+                border-width: 2px;
+                border-radius:5px;
+
+
+            }
+        </style>
+
+
+
+        <br>
+        <br>
+    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+    </fb:login-button>
+    <div id = "fbdiv">
+    </div>
+    <div align="center">        
+
+        <table id = "inputTable" >    
+
+            <tr><td>Id: </td><td><input id = "input_id"> </input> </td> </tr>
+            <tr><td>Association: </td><td><input id = "input_name"> </input> </td></tr>
+            <tr><td>City: </td><td><input id = "input_city"> </input> </td></tr>
+            <tr><td>Street: </td><td><input id = "input_street"> </input></td> </tr>
+            <tr><td>Building: </td><td><input id = "input_building"> </input> </td> </tr>
+            <tr><td>Founder\'s firstname: </td><td><input id = "input_fname"> </input></td> </tr>
+            <tr><td>Founder\'s lastname: </td><td><input id = "input_lname"> </input></td> </tr>
+            <tr><td>Founder\'s government ID: </td><td><input id = "input_pasportID"> </input></td> </tr>
+
+        </table>
+        <br><button id = "update">Update</button>   <button id = "add">Add</button>
+    </div>
+
+    <script>
+
+
+function statusChangeCallback(response) {
+    console.log('statusChangeCallback');
+    console.log(response);
+    // The response object is returned with a status field that lets the
+    // app know the current login status of the person.
+    // Full docs on the response object can be found in the documentation
+    // for FB.getLoginStatus().
+    if (response.status === 'connected') {
+      // Logged into your app and Facebook.
+      testAPI();
+    } else if (response.status === 'not_authorized') {
+      // The person is logged into Facebook, but not your app.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into this app.';
+    } else {
+      // The person is not logged into Facebook, so we're not sure if
+      // they are logged into this app or not.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into Facebook.';
+    }
+  }
+
+  // This function is called when someone finishes with the Login
+  // Button.  See the onlogin handler attached to it in the sample
+  // code below.
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+  window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '966181676749651',
+    cookie     : true,  // enable cookies to allow the server to access 
+                        // the session
+    xfbml      : true,  // parse social plugins on this page
+    version    : 'v2.2' // use version 2.2
+  });
+
+  // Now that we've initialized the JavaScript SDK, we call 
+  // FB.getLoginStatus().  This function gets the state of the
+  // person visiting this page and can return one of three states to
+  // the callback you provide.  They can be:
+  //
+  // 1. Logged into your app ('connected')
+  // 2. Logged into Facebook, but not your app ('not_authorized')
+  // 3. Not logged into Facebook and can't tell if they are logged into
+  //    your app or not.
+  //
+  // These three cases are handled in the callback function.
+
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+
+  };
+
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+      function testAPI() {
+            FB.api('/me', function (response) {
+
+                $('#fbdiv').show();
+                console.log('Successful login for: ' + response.name);
+                document.getElementById('status').innerHTML =
+                        'Thanks for logging in, ' + response.name + '!';
+            });
+        }
+
+
+
+        getAll = function () {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/get",
+                statusCode: {
+                    200: function (data) {
+
+                        var table = $('#myTable');
+                        table.remove();
+                        $('body').prepend('<table id=\'myTable\' align="center"></table>');
+
+                        table = $('#myTable');
+
+                        row = $('<tr></tr>');
+                        elem = $('<td>id</td>');
+                        row.append(elem);
+                        elem = $('<td>Association</td>');
+                        row.append(elem);
+                        elem = $('<td>Certificate</td>');
+                        row.append(elem);
+                        elem = $('<td>Date of registration</td>');
+                        row.append(elem);
+                        elem = $('<td>Expired date</td>');
+                        row.append(elem);
+                        elem = $('<td>City</td>');
+                        row.append(elem);
+                        elem = $('<td>Street</td>');
+                        row.append(elem);
+                        elem = $('<td>Building</td>');
+                        row.append(elem);
+                        elem = $('<td>Founder\'s firstname</td>');
+                        row.append(elem);
+                        elem = $('<td>Founder\'s lastname</td>');
+                        row.append(elem);
+                        elem = $('<td>Founder\'s government ID</td>');
+                        row.append(elem);
+                        table.append(row);
+
+                        for (var i = 0; i < data.length; i++) {
+                            row = $('<tr></tr>');
+
+                            elem = $('<td>' + data[i].id + '</td>');
+                            row.append(elem);
+                            elem = $('<td>' + data[i].name + '</td>');
+                            row.append(elem);
+                            elem = $('<td>' + data[i].certificate_number + '</td>');
+                            row.append(elem);
+
+                            var myDate = new Date(data[i].date_reg);
+                            var date = myDate.getDate();
+                            var month = myDate.getMonth();
+                            var year = myDate.getFullYear();
+                            elem = $('<td>' + date + "-" + (month + 1) + "-" + year + '</td>');
+                            row.append(elem);
+
+                            myDate = new Date(data[i].date_exp);
+                            date = myDate.getDate();
+                            month = myDate.getMonth();
+                            year = myDate.getFullYear();
+                            elem = $('<td>' + date + "-" + (month + 1) + "-" + year + '</td>');
+                            row.append(elem);
+
+                            elem = $('<td>' + data[i].city + '</td>');
+                            row.append(elem);
+                            elem = $('<td>' + data[i].street + '</td>');
+                            row.append(elem);
+                            elem = $('<td>' + data[i].building + '</td>');
+                            row.append(elem);
+                            elem = $('<td>' + data[i].fname + '</td>');
+                            row.append(elem);
+                            elem = $('<td>' + data[i].lname + '</td>');
+                            row.append(elem);
+                            elem = $('<td>' + data[i].passportId + '</td>');
+                            row.append(elem);
+
+
+                            button = $('<td><button id=' + data[i].id + ' class=\'delete\'>delete</button></td>');
+                            row.append(button);
+
+                            table.append(row);
+                        }
+                        load_buttons();
+                    }
+                }
+            });
+        }
+
+
+        load_buttons = function () {
+            $('.delete').on('click', function () {
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:8080/delete?id=" + $(this).attr('id'),
+                    statusCode: {
+                        200: function (data) {
+                            getAll();
+                        }
+                    }
+                });
+            });
+
+
+        }
+
+
+
+        $('#add').on('click', function () {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/add?name=" + $('#input_name').val() + "&fname=" + $('#input_fname').val() + "&lname=" + $('#input_lname').val() + "&passport=" + $('#input_pasportID').val() + "&address=" + $('#input_city').val() + ";" + $('#input_street').val() + ";" + $('#input_building').val(),
+                statusCode: {
+                    200: function (data) {
+                        getAll();
+                    }
+                }
+            });
+        });
+
+
+        $('#update').on('click', function () {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/update?id=" + $('#input_id').val() + "&name=" + $('#input_name').val() + "&fname=" + $('#input_fname').val() + "&lname=" + $('#input_lname').val() + "&passport=" + $('#input_pasportID').val() + "&address=" + $('#input_city').val() + ";" + $('#input_street').val() + ";" + $('#input_building').val(),
+                statusCode: {
+                    200: function (data) {
+                        getAll();
+                    }
+                }
+            });
+        });
+        $('#fbdiv').hide();
+        getAll();
+    </script>
+
+
+
+    <button><a href="/friend.html">friend API</button>  
+
+</body>
+</html>
